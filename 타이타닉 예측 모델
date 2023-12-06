@@ -1,0 +1,96 @@
+# /content/titanic.csv
+
+import numpy as np
+import pandas as pd
+import sklearn
+
+# 모델 결정 트리
+from sklearn.tree import DecisionTreeClassifier
+# KNN
+from sklearn.neighbors import KNeighborsClassifier
+# train, test 데이터 분리
+from sklearn.model_selection import train_test_split
+
+# 판다스로 데이터 호출
+df = pd.read_csv('/content/drive/MyDrive/titanic.csv')
+
+df
+
+df.info()
+
+ df.describe()
+
+df.describe(include=object)
+
+- 데이터 전처리
+
+- Age칼럼 평균으로 대치
+- Embarked는 결측치 최빈값으로 대치
+- Cabin 칼럽을 결측치 많아서 삭제
+
+# Age 칼럼 평균
+d_mean =df['Age'].mean()
+df['Age'].fillna(d_mean, inplace=True)
+
+# Embarked는 결측치 최빈값
+d_mode = df['Embarked'].mode()[0]
+print(d_mode)
+df['Embarked'].fillna(d_mode, inplace=True)
+
+
+
+d_mode1 =df['Embarked'].mode()
+d_mode1
+
+df.info()
+
+# Sex, Embarked 칼럼을 LabelEncoding 함
+from sklearn.preprocessing import LabelEncoder
+df['Sex'] = LabelEncoder().fit_transform(df['Sex'])
+# male, female
+df['Embarked'] = LabelEncoder().fit_transform(df['Embarked'])
+
+df.head()
+
+# SibSp + Parch 더해서 새로운 컬럼 FamilySize 컬럼 생성
+df['FamilySize'] = df['SibSp'] + df['Parch']
+
+df.info()
+
+df.head()
+
+# 문제(X) 답지(y) 분류
+
+X = df[['Pclass', 'Sex', 'Age', 'Fare', 'Embarked', 'FamilySize']]
+
+# 답지
+y = df['Survived']
+y
+
+# X,y
+# X = X_train, X_test 문제
+# y = y_train, y_test 답지
+X_train, X_test, y_train, y_test =  train_test_split(X, y, test_size=0.2, random_state=11)
+
+X.shape,y.shape
+
+X_train.shape, X_test.shape
+
+y_train.shape, y_test.shape
+
+# 모델 생성
+dt_model = DecisionTreeClassifier(random_state=11)
+
+# 모델 학습
+dt_model.fit(X_train, y_train)
+
+# 모델 예측
+pred = dt_model.predict(X_test)
+pred
+
+
+# 모델 평가 (accuracy_score = 실제 답지, 예측답지)
+from sklearn.metrics import accuracy_score
+acc = accuracy_score(y_test, pred)
+acc
+# np.round(acc, 4) 소수점을 네자리로 하는 함수
